@@ -8,10 +8,13 @@ import java.util.TreeMap;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
@@ -20,7 +23,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
  
 public class Demo {
-    
+    /*
 	public static class JsonMapper extends Mapper<Object, Text, Text, InfoWritable> {
 
 		private InfoWritable info = new InfoWritable();
@@ -68,7 +71,46 @@ public class Demo {
 			}
 		}
 	}
+	*/
 	
+	public static class JsonMapper extends Mapper<Object, Text, Text, Text> {
+
+		private ReivewWritable info = new ReivewWritable();
+		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+	            String[] tuple = value.toString().split("\\n");
+	             for(int i=0;i<tuple.length; i++)
+	             {
+	            	 Review review = mapper.readValue(tuple[i], Review.class);
+	            	 
+	            	 if(review != null && review.text != null)
+	            	 {
+	            		 review.text = review.text.replace("\n", "~");
+	            		 info.SetName(review.text);
+	            		 info.SetStars(review.stars);
+	            		 if(Integer.parseInt(review.stars) > 3)
+	            		 {
+	            			 info.SetPosLabel(1);
+	            			 info.SetNegLabel(0);
+	            		 }
+	            		 else
+	            		 {
+	            			 info.SetPosLabel(0);
+	            			 info.SetNegLabel(1);
+	            		 }
+	            		 context.write(new Text( info.GetName() ), new Text("^"+ "^"+info.GetStars() + "^" +info.GetPosLabel()+ "^"+info.GetNegLabel()));
+	            		
+	            	 } 
+	              }
+
+			} catch (JSONException e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+
+			}
+		}
+	}
     public static void main(String[] args) throws Exception {
     	 runJob(args[0], args[1]);
     }
@@ -81,11 +123,11 @@ public class Demo {
         Job job = new Job(conf);
         job.setJarByClass(Demo.class);
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(InfoWritable.class);
+        job.setOutputValueClass(Text.class);
         job.setMapperClass(JsonMapper.class);
-        job.setReducerClass(JsonReducer.class);
+        //job.setReducerClass(JsonReducer.class);
         //job.setInputFormatClass(KeyValueTextInputFormat.class);
-        job.setNumReduceTasks(1);
+        //job.setNumReduceTasks(1);
         job.setOutputFormatClass(TextOutputFormat.class);
 
         FileInputFormat.setInputPaths(job, new Path(input));

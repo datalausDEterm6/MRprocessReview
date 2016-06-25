@@ -8,8 +8,8 @@ public class Review {
 	@JsonProperty("type")
 	public String type;
 	
-	@JsonProperty("business_id")
-	public String businessId;
+	@JsonProperty("user_id")
+	public String userId;
 	
 	@JsonProperty("stars")
 	public String stars;
@@ -17,7 +17,7 @@ public class Review {
 	@JsonProperty("text")
 	public String text;
 	
-	
+	/*
 	@JsonProperty("votes")
 	public Vote votes;
 	
@@ -31,6 +31,7 @@ public class Review {
 		@JsonProperty("cool")
 		public String cool;
 	}
+	*/
 }
 
 

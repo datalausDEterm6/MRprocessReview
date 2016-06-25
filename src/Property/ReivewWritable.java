@@ -6,28 +6,29 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.Writable;
 
-public class InfoWritable implements Writable {
+public class ReivewWritable implements Writable {
 
-	private String name;
+	private String text;
 	private String stars;
-
-	@Override
+	private int posLabel;
+	private int negLabel;
+	
+	
 	public void readFields(DataInput in) throws IOException {
 		// TODO Auto-generated method stub
-		name = in.readUTF();  
+		text = in.readUTF();  
 		stars =  in.readUTF();
 	}
 
-	@Override
 	public void write(DataOutput out) throws IOException {
 		// TODO Auto-generated method stub
-		out.writeUTF(name);
+		out.writeUTF(text);
 		out.writeUTF(stars);
 	}
 
 	public void SetName(String name)
 	{
-		this.name = name;
+		this.text = name;
 	}
 	
 	public void SetStars(String stars)
@@ -35,15 +36,33 @@ public class InfoWritable implements Writable {
 		this.stars = stars;
 	}
 	
-	
-	
 	public String GetName()
 	{
-		return name;
+		return text;
 	}
 	
 	public String GetStars()
 	{
 		return stars;
+	}
+	
+	public void SetPosLabel(int posLabel)
+	{
+		this.posLabel = posLabel;
+	}
+	
+	public void SetNegLabel(int negLabel)
+	{
+		this.negLabel = negLabel;
+	}
+	
+	public int GetPosLabel()
+	{
+		return posLabel;
+	}
+	
+	public int GetNegLabel()
+	{
+		return negLabel;
 	}
 }
